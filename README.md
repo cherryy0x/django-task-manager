@@ -148,10 +148,21 @@ Open your browser and navigate to:
 
 ## 📸 Screenshots & UI Preview
 
-### Main Dashboard & AJAX Task Management
-![TaskMaster Pro Dashboard Overview](./screenshots/dashboard.png)
+### 1. Main Dashboard & Tasks Overview
+![Dashboard Overview](./screenshots/1_dashboard_overview.png)
+*The main interactive dashboard featuring real-time statistics counters (Total, Pending, Completed, Overdue).*
 
-*The interactive dashboard showing real-time statistics counters, task creation form, status badges, and AJAX "Mark Complete" & "Delete" controls.*
+### 2. Task Creation Form
+![Task Creation Form](./screenshots/2_task_creation.png)
+*The task creation form with title, description, and due date validation.*
+
+### 3. Asynchronous AJAX Task Completion
+![AJAX Completion State](./screenshots/3_ajax_completion.png)
+*Task marked completed asynchronously via JavaScript Fetch API with instant DOM badge & counter updates (no page reload).*
+
+### 4. Interactive Completed Tasks Filter
+![Filtered Completed Tasks Tab](./screenshots/4_completed_filter_tab.png)
+*Interactive filter tabs showing filtered completed tasks and live metrics.*
 
 ---
 
