@@ -160,13 +160,10 @@
                                     {% endif %}
                                 </button>
 
-                                <!-- Delete Task Form / Button -->
-                                <form action="{% url 'task_delete' task.id %}" method="POST" class="delete-form" style="display:inline;" onsubmit="return confirmDelete(event, {{ task.id }});">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-delete" title="Delete Task">
-                                        <i class="fa-solid fa-trash-can"></i> Delete
-                                    </button>
-                                </form>
+                                <!-- Delete Task Button (AJAX) -->
+                                <button type="button" class="btn btn-sm btn-delete" title="Delete Task" onclick="deleteTask({{ task.id }})">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </button>
                             </div>
                         </div>
                     </div>

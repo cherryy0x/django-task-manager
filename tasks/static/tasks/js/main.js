@@ -187,12 +187,56 @@ function filterTasks(filter) {
 }
 
 /**
- * Delete Confirmation Prompt
+ * AJAX Function: Deletes a task from the database and removes it from the UI without page reload
+ * @param {number} taskId 
  */
-function confirmDelete(event, taskId) {
-    if (!confirm('Are you sure you want to delete this task?')) {
-        event.preventDefault();
-        return false;
+async function deleteTask(taskId) {
+    const card = document.getElementById(`task-card-${taskId}`);
+    const deleteBtn = card ? card.querySelector('.btn-delete') : null;
+
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
     }
-    return true;
+
+    try {
+        const response = await fetch(`/task/${taskId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            if (card) {
+                card.classList.add('fade-out');
+                setTimeout(() => {
+                    card.remove();
+                    
+                    // Update dashboard statistics counters
+                    if (data.stats) {
+                        updateStatCounters(data.stats);
+                    }
+
+                    // Re-filter list view to show empty state if 0 tasks visible
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    const activeFilter = activeTab ? activeTab.getAttribute('data-filter') : 'all';
+                    filterTasks(activeFilter);
+                }, 300);
+            }
+        } else {
+            alert(data.error || 'Failed to delete task.');
+        }
+    } catch (error) {
+        console.error('AJAX Error deleting task:', error);
+        alert('An error occurred while deleting the task. Please try again.');
+    }
 }
