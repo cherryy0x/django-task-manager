@@ -148,16 +148,10 @@ Open your browser and navigate to:
 
 ## 📸 Screenshots & UI Preview
 
-> *Note: Placeholders for application UI screenshots in the repository.*
+### Main Dashboard & AJAX Task Management
+![TaskMaster Pro Dashboard Overview](./screenshots/dashboard.png)
 
-### 1. Main Dashboard & Tasks Overview
-![Dashboard Overview Placeholder](https://via.placeholder.com/1200x600/0f172a/ffffff?text=TaskMaster+Pro+-+Main+Dashboard+Overview)
-
-### 2. Adding a New Task
-![Add Task Form Placeholder](https://via.placeholder.com/1200x600/1e293b/ffffff?text=TaskMaster+Pro+-+Task+Creation+Form)
-
-### 3. Asynchronous AJAX "Mark Complete" Action
-![AJAX Completion Placeholder](https://via.placeholder.com/1200x600/16a34a/ffffff?text=TaskMaster+Pro+-+AJAX+Task+Completion+in+Real-Time)
+*The interactive dashboard showing real-time statistics counters, task creation form, status badges, and AJAX "Mark Complete" & "Delete" controls.*
 
 ---
 
