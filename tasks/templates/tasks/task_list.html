@@ -1,0 +1,184 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Dashboard | TaskMaster Pro{% endblock %}
+
+{% block content %}
+<!-- CSRF Token Meta for JavaScript Fetch requests -->
+{% csrf_token %}
+
+<!-- Header & Statistics Metrics -->
+<div class="dashboard-header">
+    <div class="header-intro">
+        <h1 class="page-title">Task Management Dashboard</h1>
+        <p class="page-subtitle">Organize, track, and complete your tasks seamlessly with real-time AJAX updates.</p>
+    </div>
+</div>
+
+<!-- Stats Counter Grid -->
+<div class="stats-grid">
+    <div class="stat-card total-tasks">
+        <div class="stat-icon"><i class="fa-solid fa-list-ul"></i></div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-total">{{ stats.total }}</span>
+            <span class="stat-label">Total Tasks</span>
+        </div>
+    </div>
+
+    <div class="stat-card pending-tasks">
+        <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-pending">{{ stats.pending }}</span>
+            <span class="stat-label">Pending</span>
+        </div>
+    </div>
+
+    <div class="stat-card completed-tasks">
+        <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-completed">{{ stats.completed }}</span>
+            <span class="stat-label">Completed</span>
+        </div>
+    </div>
+
+    <div class="stat-card overdue-tasks">
+        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-overdue">{{ stats.overdue }}</span>
+            <span class="stat-label">Overdue</span>
+        </div>
+    </div>
+</div>
+
+<div class="content-layout">
+    <!-- Left Column: Add New Task Form -->
+    <section class="form-section">
+        <div class="card form-card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-plus-circle"></i> Create New Task</h3>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'task_list' %}" method="POST" id="create-task-form" class="task-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            Task Title <span class="required">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="field-error">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="field-error">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                            Due Date <span class="required">*</span>
+                        </label>
+                        {{ form.due_date }}
+                        {% if form.due_date.errors %}
+                            <div class="field-error">{{ form.due_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-plus"></i> Save Task
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right Column: Task List & Filters -->
+    <section class="tasks-section">
+        <div class="tasks-header-bar">
+            <h2><i class="fa-solid fa-tasks"></i> All Tasks</h2>
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">All (<span id="tab-count-all">{{ stats.total }}</span>)</button>
+                <button class="tab-btn" data-filter="pending">Pending (<span id="tab-count-pending">{{ stats.pending }}</span>)</button>
+                <button class="tab-btn" data-filter="completed">Completed (<span id="tab-count-completed">{{ stats.completed }}</span>)</button>
+            </div>
+        </div>
+
+        <!-- Task List Container -->
+        <div class="task-list" id="task-list-container">
+            {% if tasks %}
+                {% for task in tasks %}
+                    <div class="task-card {% if task.is_completed %}completed-card{% endif %}" 
+                         id="task-card-{{ task.id }}" 
+                         data-status="{% if task.is_completed %}completed{% else %}pending{% endif %}">
+                        
+                        <div class="task-card-header">
+                            <div class="title-wrapper">
+                                <h3 class="task-title {% if task.is_completed %}completed-text{% endif %}" id="task-title-{{ task.id }}">
+                                    {{ task.title }}
+                                </h3>
+                            </div>
+                            
+                            <span class="status-badge {% if task.is_completed %}badge-completed{% else %}badge-pending{% endif %}" id="task-badge-{{ task.id }}">
+                                {% if task.is_completed %}
+                                    <i class="fa-solid fa-check-double"></i> Completed
+                                {% else %}
+                                    <i class="fa-solid fa-spinner fa-spin-pulse"></i> Pending
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        {% if task.description %}
+                            <p class="task-description {% if task.is_completed %}muted-text{% endif %}">
+                                {{ task.description }}
+                            </p>
+                        {% endif %}
+
+                        <div class="task-card-footer">
+                            <div class="date-badge {% if task.is_overdue %}overdue-date{% endif %}">
+                                <i class="fa-regular fa-calendar-days"></i>
+                                <span>Due: {{ task.due_date|date:"M d, Y" }}</span>
+                                {% if task.is_overdue %}
+                                    <span class="overdue-tag">Overdue</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="task-actions">
+                                <!-- AJAX Mark Complete Button -->
+                                <button class="btn btn-sm {% if task.is_completed %}btn-completed{% else %}btn-complete{% endif %}"
+                                        id="btn-complete-{{ task.id }}"
+                                        onclick="toggleTaskComplete({{ task.id }})">
+                                    {% if task.is_completed %}
+                                        <i class="fa-solid fa-circle-check"></i> Completed
+                                    {% else %}
+                                        <i class="fa-solid fa-check"></i> Mark Complete
+                                    {% endif %}
+                                </button>
+
+                                <!-- Delete Task Form / Button -->
+                                <form action="{% url 'task_delete' task.id %}" method="POST" class="delete-form" style="display:inline;" onsubmit="return confirmDelete(event, {{ task.id }});">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-delete" title="Delete Task">
+                                        <i class="fa-solid fa-trash-can"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <h3>No tasks found</h3>
+                    <p>Get started by creating your first task using the form on the left!</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

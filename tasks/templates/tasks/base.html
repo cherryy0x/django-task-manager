@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Full-Stack Task Management Application with Real-Time AJAX Task Completion in Django">
+    <title>{% block title %}TaskMaster - Full-Stack Task Manager{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="{% static 'tasks/css/style.css' %}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header class="app-header">
+        <div class="nav-container">
+            <div class="brand">
+                <i class="fa-solid fa-square-check brand-icon"></i>
+                <span class="brand-title">TaskMaster Pro</span>
+                <span class="badge badge-version">v1.0 Django AJAX</span>
+            </div>
+            <nav class="nav-links">
+                <a href="{% url 'task_list' %}" class="nav-link active"><i class="fa-solid fa-list-check"></i> Dashboard</a>
+                <a href="/admin/" target="_blank" class="nav-link"><i class="fa-solid fa-user-shield"></i> Django Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Toast / Alert Notification Messages -->
+            {% if messages %}
+                <div class="messages-container" id="django-messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} fade-in">
+                            <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+                            <span>{{ message }}</span>
+                            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container footer-content">
+            <p>&copy; 2026 TaskMaster Application. Built with <strong>Django</strong>, <strong>JavaScript (Fetch API)</strong>, and <strong>Vanilla CSS</strong>.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script src="{% static 'tasks/js/main.js' %}"></script>
+</body>
+</html>
